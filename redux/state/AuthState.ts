@@ -1,0 +1,4 @@
+interface AuthState {
+    isLoggedIn: boolean;
+    token: string | null;
+  }
