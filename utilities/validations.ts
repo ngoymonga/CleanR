@@ -12,4 +12,3 @@ export default class Validation {
       return !value || value.trim() === '';
     }
   }
-  
