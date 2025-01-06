@@ -65,7 +65,7 @@ const OboardingScreen: FC<AppProps> = ({ navigation }) => {
             >
               <View style={{ flex: 1 }}>
                 <TouchableOpacity
-                  onPress={() => navigation.navigate("Select")}
+                
                   style={{
                     flexDirection: "row-reverse",
                     width: "95%",

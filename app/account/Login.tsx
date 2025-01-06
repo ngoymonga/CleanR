@@ -7,43 +7,37 @@ import {
   TextInput,
   Image,
   Dimensions,
+  ActivityIndicator,
 } from "react-native";
-import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
+import { useRoute, RouteProp } from "@react-navigation/native";
+import { Link, useRouter } from "expo-router";
+import Validation from "utilities/validations";
+import { Provider, useDispatch, useSelector } from "react-redux";
+import { ILoginModel } from "core/models/LoginModel";
 import IconAD from "react-native-vector-icons/AntDesign";
 import IconI from "react-native-vector-icons/Ionicons";
 import IconE from "react-native-vector-icons/Entypo";
-import { Link } from "expo-router";
-import Validation from "utilities/validations";
 
-type RouteParams = {
-  user_type: number;
-};
+import { loginUser } from "redux/authSlice";
+import store, { AppDispatch, RootState } from "redux/store";
 
-type NavigationProps = {
-  navigate: (screen: string, params?: any) => void;
-};
+function Login(): JSX.Element {
+  const router = useRouter();
 
-export default function Login(): JSX.Element {
-  const route = useRoute<RouteProp<{ params: RouteParams }, "params">>();
-  const navigation = useNavigation<NavigationProps>();
+  const dispatch = useDispatch<AppDispatch>();
+  const { loading, error, isLoggedIn } = useSelector(
+    (state: RootState) => state.auth
+  );
 
-  const [email, setEmail] = useState<string | undefined>();
-  const [password, setPassword] = useState<string | undefined>();
-  const [userType, setUserType] = useState<number>(route.params.user_type);
-  const [code, setCode] = useState<string>("kleenapp12345");
-  const [deviceType, setDeviceType] = useState<string>("android");
-  const [fbUserName, setFbUserName] = useState<string | undefined>();
-  const [fbUserID, setFbUserID] = useState<string | undefined>();
-  const [passwordError, setPasswordError] = useState<string | undefined>();
-  const [emailError, setEmailError] = useState<string | undefined>();
-  //   const [devicesToken, setDevicesToken] = useState<string | undefined>(
-  //     global.device_token
-  //   );
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [category, setCategory] = useState<any>();
+  const [emailError, setEmailError] = useState<string | undefined>();
+  const [passwordError, setPasswordError] = useState<string | undefined>();
 
-  const signins = async (): Promise<void> => {
+  const validateInputs = (): boolean => {
     let valid = true;
+
     if (!email || Validation.isEmpty(email)) {
       setEmailError("Email is required");
       valid = false;
@@ -53,6 +47,7 @@ export default function Login(): JSX.Element {
     } else {
       setEmailError(undefined);
     }
+
     if (!password || Validation.isEmpty(password)) {
       setPasswordError("Password is required");
       valid = false;
@@ -63,17 +58,26 @@ export default function Login(): JSX.Element {
       setPasswordError(undefined);
     }
 
-    if (valid) {
-      // Proceed with the sign-in logic
-      ////  navigation.navigate("Home");
-    }
+    return valid;
   };
 
-  const signIn = async (): Promise<void> => {};
+  const handleLogin = async (): Promise<void> => {
+    if (validateInputs()) {
+      const model: ILoginModel = {
+        email: email,
+        password: password,
+      };
+      dispatch(loginUser(model));
+    }
+  };
 
   const toggleShowPassword = (): void => {
     setShowPassword(!showPassword);
   };
+
+  if (isLoggedIn) {
+    router.push("Home");
+  }
 
   return (
     <View style={styles.container}>
@@ -165,7 +169,7 @@ export default function Login(): JSX.Element {
           marginTop: 30,
         }}
       >
-        <TouchableOpacity style={styles.signview} onPress={signins}>
+        <TouchableOpacity style={styles.signview} onPress={handleLogin}>
           <Link href={"/Home"}>
             <Text style={{ color: "#FFF", fontSize: 20, fontWeight: "700" }}>
               Login
@@ -184,11 +188,7 @@ export default function Login(): JSX.Element {
         }}
       >
         <Text style={styles.signup}>Don't have an account?</Text>
-        <TouchableOpacity
-          onPress={() =>
-            navigation.navigate("Register", { user_type: userType })
-          }
-        >
+        <TouchableOpacity>
           <Link href={"/account/Register"}>
             <Text style={{ color: "#00BAF5", fontSize: 18, fontWeight: "600" }}>
               {" "}
@@ -200,6 +200,14 @@ export default function Login(): JSX.Element {
     </View>
   );
 }
+
+const LoginWithProvider = () => (
+  <Provider store={store}>
+    <Login />
+  </Provider>
+);
+
+export default LoginWithProvider;
 
 const styles = StyleSheet.create({
   container: {

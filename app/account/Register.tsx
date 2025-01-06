@@ -7,53 +7,30 @@ import {
   StyleSheet,
   Image,
   ScrollView,
-  Modal,
   Dimensions,
-  Alert,
-  BackHandler,
 } from "react-native";
-import {
-  GoogleSignin,
-  GoogleSigninButton,
-  statusCodes,
-} from "@react-native-google-signin/google-signin";
 import IconAD from "react-native-vector-icons/AntDesign";
 import IconI from "react-native-vector-icons/Ionicons";
-import IconE from "react-native-vector-icons/Entypo";
-import MapView, { Marker, AnimatedRegion } from "react-native-maps";
-//import Modal from "react-native-modal";
-import { launchCamera, launchImageLibrary } from "react-native-image-picker";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { CountryPicker } from "react-native-country-codes-picker";
 import { Link } from "expo-router";
 import Validation from "utilities/validations";
 
 const Register = () => {
-  const navigation = useNavigation();
   const route = useRoute<any>();
 
-  useEffect(() => {}, []);
-
-  const backAction = () => {};
   const [name, setName] = useState<string>();
   const [email, setEmail] = useState<string>();
-  const [image, setImage] = useState();
   const [password, setPassword] = useState<string>();
   const [passwords, setPasswords] = useState();
   const [phone, setPhone] = useState();
   const [modalVisible, setModalVisible] = useState(false);
   const [gender, setGender] = useState("");
-  const [device_type, setDevice_type] = useState("mobile");
   const [show, setShow] = useState(false);
   const [countryCode, setCountryCode] = useState("+1");
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswords, setShowPasswords] = useState(false);
-  const [latitude, setLatitude] = useState();
-  const [longitude, setLongitude] = useState();
-  const [path, setPath] = useState();
-  const [imgData, setImgData] = useState();
-  const [address, setAddress] = useState();
+
   const [showMale, setShowMale] = useState(false);
   const [showFeMale, setShowFeMale] = useState(false);
   const [getaddress, setGetaddress] = useState();
@@ -61,6 +38,8 @@ const Register = () => {
   const [emailError, setEmailError] = useState<string | undefined>();
   const [phoneError, setPhoneError] = useState<string | undefined>();
   const [nameError, setNameError] = useState<string | undefined>();
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [confirmPasswordError, setConfirmPasswordError] = useState("");
   const screen = Dimensions.get("window");
   const ASPECT_RATIO = screen.width / screen.height;
   const LATITUDE_DELTA = 0.04;
@@ -74,94 +53,12 @@ const Register = () => {
     setShowPasswords(!showPasswords);
   };
 
-  const signIn = async () => {};
-
-  const pickImage = async () => {
-    const options = {
-      quality: 1.0,
-      maxWidth: 500,
-      maxHeight: 500,
-      includeBase64: false,
-      storageOptions: {
-        skipBackup: true,
-      },
-    };
-
-    setModalVisible(false);
-  };
-
-  const pickImagec = async () => {
-    const options = {
-      quality: 1.0,
-      maxWidth: 500,
-      maxHeight: 500,
-      includeBase64: false,
-      storageOptions: {
-        skipBackup: true,
-      },
-    };
-
-    setModalVisible(false);
-  };
-
-  const signup = async () => {
-
-
-    
-  };
-
-  const [state, setState] = useState({
-    curLoc: {
-      latitude: 22.7196,
-      longitude: 75.8577,
-    },
-    destinationCords: {},
-    isLoading: false,
-    coordinate: new AnimatedRegion({
-      latitude: 22.7196,
-      longitude: 75.8577,
-      latitudeDelta: LATITUDE_DELTA,
-      longitudeDelta: LONGITUDE_DELTA,
-    }),
-    time: 0,
-    distance: 0,
-    heading: 0,
-  });
-
-  const updateState = (data: {
-    destinationCords:
-      | {}
-      | {
-          latitude: React.SetStateAction<undefined>;
-          longitude: React.SetStateAction<undefined>;
-          data: { description: React.SetStateAction<undefined> };
-        };
-    curLoc?: { latitude: number; longitude: number };
-    isLoading?: boolean;
-    coordinate?: any;
-    time?: number;
-    distance?: number;
-    heading?: number;
-  }) => setState((state) => ({ ...state, ...data }));
-  const ChooseLocations = () => {};
-
-  const fetchValue = (data: {
-    destinationCords: {
-      data: { description: React.SetStateAction<undefined> };
-      latitude: React.SetStateAction<undefined>;
-      longitude: React.SetStateAction<undefined>;
-    };
-  }) => {
-    setGetaddress(data.destinationCords.data.description);
-    setLatitude(data.destinationCords.latitude);
-    setLongitude(data.destinationCords.longitude);
-    updateState({
-      destinationCords: {
-        latitude: data.destinationCords.latitude,
-        longitude: data.destinationCords.longitude,
-        data: data.destinationCords.data,
-      },
-    });
+  const handleSubmit = () => {
+    if (password !== confirmPassword) {
+      setConfirmPasswordError("Passwords do not match");
+      return;
+    }
+    console.log("Form submitted!");
   };
 
   const toggleMale = () => {
@@ -174,10 +71,6 @@ const Register = () => {
     setGender("female");
     setShowFeMale(true);
     setShowMale(false);
-  };
-
-  const pickImages = () => {
-    setModalVisible(!modalVisible);
   };
 
   return (
@@ -215,12 +108,12 @@ const Register = () => {
             alignItems: "center",
           }}
         >
-       
-
           <View style={styles.inputContainer}>
-          <View style={{ width: "95%" }}>
-            <Text style={{ color: "#000", paddingBottom:20 }}>Enter Your Full Name</Text>
-          </View>
+            <View style={{ width: "95%" }}>
+              <Text style={{ color: "#000", paddingBottom: 20 }}>
+                Enter Your Full Name
+              </Text>
+            </View>
             <View
               style={{
                 flexDirection: "row",
@@ -253,12 +146,12 @@ const Register = () => {
             {nameError && <Text style={styles.error}>{nameError}</Text>}
           </View>
 
-          
-
           <View style={styles.inputContainer}>
-          <View style={{ width: "95%" }}>
-            <Text style={{ color: "#000", paddingBottom:20 }}>Mobile Number</Text>
-          </View>
+            <View style={{ width: "95%" }}>
+              <Text style={{ color: "#000", paddingBottom: 20 }}>
+                Mobile Number
+              </Text>
+            </View>
             <View
               style={{
                 flexDirection: "row",
@@ -319,12 +212,10 @@ const Register = () => {
             {phoneError && <Text style={styles.error}>{phoneError}</Text>}
           </View>
 
-      
-
           <View style={styles.inputContainer}>
-          <View style={{ width: "95%" }}>
-            <Text style={{ color: "#000", paddingBottom:20 }}>Email ID</Text>
-          </View>
+            <View style={{ width: "95%" }}>
+              <Text style={{ color: "#000", paddingBottom: 20 }}>Email ID</Text>
+            </View>
             <View
               style={{
                 flexDirection: "row",
@@ -358,7 +249,9 @@ const Register = () => {
           </View>
 
           <View style={{ width: "95%" }}>
-            <Text style={{ color: "#000" , paddingBottom:10, paddingTop: 10}}>Gender</Text>
+            <Text style={{ color: "#000", paddingBottom: 10, paddingTop: 10 }}>
+              Gender
+            </Text>
           </View>
 
           <View style={{ width: "95%", flexDirection: "row" }}>
@@ -409,12 +302,11 @@ const Register = () => {
           {route.params.user_type == 2 ? (
             <View style={{ width: "95%" }}></View>
           ) : null}
-        
 
           <View style={styles.inputContainer}>
-          <View style={{ width: "95%" }}>
-            <Text style={{ color: "#000" , paddingBottom:20}}>Password</Text>
-          </View>
+            <View style={{ width: "95%" }}>
+              <Text style={{ color: "#000", paddingBottom: 20 }}>Password</Text>
+            </View>
             <View
               style={{
                 flexDirection: "row",
@@ -438,7 +330,7 @@ const Register = () => {
                   } else if (!Validation.isPasswordValid(value)) {
                     setPasswordError("Password must be at least 6 characters");
                   } else {
-                    setPasswordError(undefined);
+                    setPasswordError("");
                   }
                 }}
                 value={password}
@@ -458,12 +350,12 @@ const Register = () => {
             {passwordError && <Text style={styles.error}>{passwordError}</Text>}
           </View>
 
-         
-
           <View style={styles.inputContainer}>
-          <View style={{ width: "95%" }}>
-            <Text style={{ color: "#000", paddingBottom:20 }}>Confirm Password</Text>
-          </View>
+            <View style={{ width: "95%" }}>
+              <Text style={{ color: "#000", paddingBottom: 20 }}>
+                Confirm Password
+              </Text>
+            </View>
             <View
               style={{
                 flexDirection: "row",
@@ -481,13 +373,11 @@ const Register = () => {
                 placeholder="Confirm Password"
                 secureTextEntry={!showPasswords}
                 onChangeText={(value) => {
-                  setPassword(value);
-                  if (!value || Validation.isEmpty(value)) {
-                    setPasswordError("Password is required");
-                  } else if (!Validation.isPasswordValid(value)) {
-                    setPasswordError("Password must be at least 6 characters");
+                  setConfirmPassword(value);
+                  if (value !== password) {
+                    setConfirmPasswordError("Passwords do not match");
                   } else {
-                    setPasswordError(undefined);
+                    setConfirmPasswordError("");
                   }
                 }}
                 value={passwords}
@@ -502,7 +392,9 @@ const Register = () => {
                 )}
               </TouchableOpacity>
             </View>
-            {passwordError && <Text style={styles.error}>{passwordError}</Text>}
+            {confirmPasswordError && (
+              <Text style={{ color: "red" }}>{confirmPasswordError}</Text>
+            )}
           </View>
         </View>
         <View
@@ -511,10 +403,13 @@ const Register = () => {
             width: "100%",
             justifyContent: "center",
             alignItems: "center",
-            marginTop: 30
+            marginTop: 30,
           }}
         >
-          <TouchableOpacity style={styles.signview} onPress={() => signup()}>
+          <TouchableOpacity
+            style={styles.signview}
+            onPress={() => handleSubmit()}
+          >
             <Text style={{ color: "#FFF", fontSize: 20, fontWeight: "700" }}>
               Signup
             </Text>

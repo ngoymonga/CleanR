@@ -73,7 +73,7 @@ export const SelectAccount = () => {
           }}
         >
           <TouchableOpacity
-            onPress={() => navigation.navigate("Login", { user_type: 1 })}
+      
             style={{
               backgroundColor: "#00BAF5",
               height: 60,
@@ -90,7 +90,7 @@ export const SelectAccount = () => {
             </Link>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => navigation.navigate("Login", { user_type: 2 })}
+        
             style={{
               backgroundColor: "#1C1154",
               height: 60,
